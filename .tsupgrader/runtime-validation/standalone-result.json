@@ -1,0 +1,114 @@
+{
+  "planHash": "9047b16d6939bd90949e95770bc55c386d7260425952f748b6440f549485ef8b",
+  "phase": "standalone",
+  "recordedAtUtc": "2026-11-01T16:57:17.4905461Z",
+  "retryCount": 0,
+  "resetBaseline": false,
+  "complete": true,
+  "result": {
+    "setupSucceeded": true,
+    "setupDurationMs": 55028,
+    "setupFailureOutput": null,
+    "assertions": [
+      {
+        "name": "production-build",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E portfolio@0.0.0 build\r\n\u003E tsc -b \u0026\u0026 vite build\r\n\r\n\u001B[36mvite v8.3.5 \u001B[32mbuilding client environment for production...\u001B[36m\u001B[39m\r\ntransforming...\r\n\u2713 2459 modules transformed.\r\nrendering chunks...\r\ncomputing gzip size...\r\ndist/index.html                                              0.69 kB \u2502 gzip:   0.39 kB\r\ndist/assets/kanit-vietnamese-300-normal-D9FkBJd3.woff        5.68 kB\r\ndist/assets/kanit-vietnamese-400-normal-dow6Bnto.woff        5.69 kB\r\ndist/assets/kanit-vietnamese-700-normal-BlUBAAZx.woff        5.78 kB\r\ndist/assets/geist-cyrillic-ext-wght-normal-DjL33-gN.woff2    7.42 kB\r\ndist/assets/geist-vietnamese-wght-normal-6IgcOCM7.woff2      8.00 kB\r\ndist/assets/kanit-thai-300-normal-CheLIY2i.woff              8.74 kB\r\ndist/assets/kanit-thai-700-normal-BFFnaoRZ.woff              8.84 kB\r\ndist/assets/kanit-thai-400-normal-D2nliXKa.woff              9.00 kB\r\ndist/assets/kanit-vietnamese-300-normal-CBhOTgEZ.woff2      10.39 kB\r\ndist/assets/kanit-vietnamese-400-normal-DRI8YWyb.woff2      10.61 kB\r\ndist/assets/kanit-vietnamese-700-normal-CdlTihzi.woff2      10.91 kB\r\ndist/assets/kanit-thai-300-normal-C7lzstOG.woff2            13.15 kB\r\ndist/assets/kanit-latin-ext-700-normal-2PbN0JCr.woff        13.21 kB\r\ndist/assets/kanit-latin-ext-300-normal-CD1vh3sV.woff        13.26 kB\r\ndist/assets/kanit-thai-400-normal-D80Pglro.woff2            13.45 kB\r\ndist/assets/kanit-latin-ext-400-normal-CHvNKHHD.woff        13.46 kB\r\ndist/assets/kanit-thai-700-normal-BPu_EjOu.woff2            13.48 kB\r\ndist/assets/kanit-latin-300-normal-BWYbi1UB.woff            13.53 kB\r\ndist/assets/kanit-latin-700-normal-CZbzRMIr.woff            13.60 kB\r\ndist/assets/kanit-latin-400-normal-HVZWrfev.woff            13.76 kB\r\ndist/assets/geist-cyrillic-wght-normal-BEAKL7Jp.woff2       15.08 kB\r\ndist/assets/geist-latin-ext-wght-normal-DC-KSUi6.woff2      16.51 kB\r\ndist/assets/kanit-latin-300-normal-Dvhd4GiE.woff2           19.04 kB\r\ndist/assets/kanit-latin-700-normal-xfKc2BN3.woff2           19.27 kB\r\ndist/assets/kanit-latin-400-normal-BUlsQXH3.woff2           19.30 kB\r\ndist/assets/kanit-latin-ext-300-normal-O04NoA38.woff2       19.84 kB\r\ndist/assets/kanit-latin-ext-400-normal-B2xPf58u.woff2       20.08 kB\r\ndist/assets/kanit-latin-ext-700-normal-CcNUUlTS.woff2       20.13 kB\r\ndist/assets/geist-latin-wght-normal-BgDaEnEv.woff2          29.40 kB\r\ndist/assets/index-BBZgjXHE.css                              87.38 kB \u2502 gzip:  16.82 kB\r\ndist/assets/index-B4Z_gDtw.js                              445.46 kB \u2502 gzip: 142.12 kB\r\n\r\n\u001B[32m\u2713 built in 1.05s\u001B[39m\r\n",
+        "durationMs": 10562
+      },
+      {
+        "name": "home-page-responds",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n\u003C!doctype html\u003E\n\u003Chtml lang=\u0022en\u0022\u003E\n  \u003Chead\u003E\n    \u003Cscript type=\u0022module\u0022\u003Eimport { injectIntoGlobalHook } from \u0022/@react-refresh\u0022;\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$ = () =\u003E {};\nwindow.$RefreshSig$ = () =\u003E (type) =\u003E type;\u003C/script\u003E\n\n    \u003Cscript type=\u0022module\u0022 src=\u0022/@vite/client\u0022\u003E\u003C/script\u003E\n\n    \u003Cmeta charset=\u0022UTF-8\u0022 /\u003E\n    \u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1.0\u0022 /\u003E\n    \u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.googleapis.com\u0022 /\u003E\n    \u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.gstatic.com\u0022 crossorigin /\u003E\n    \u003Clink href=\u0022https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900\u0026display=swap\u0022 rel=\u0022stylesheet\u0022 /\u003E\n    \u003Ctitle\u003EPranav | Software Engineer | AI/ML\u003C/title\u003E\n  \u003C/head\u003E\n  \u003Cbody\u003E\n    \u003Cdiv id=\u0022root\u0022\u003E\u003C/div\u003E\n    \u003Cscript type=\u0022module\u0022 src=\u0022/src/main.tsx\u0022\u003E\u003C/script\u003E\n  \u003C/body\u003E\n\u003C/html\u003E\n\n--- server output ---\n\r\n\u003E portfolio@0.0.0 dev\r\n\u003E vite --host 127.0.0.1\r\n\r\n\r\n  \u001B[32m\u001B[1mVITE\u001B[22m v8.3.5\u001B[39m  \u001B[2mready in \u001B[0m\u001B[1m673\u001B[22m\u001B[2m\u001B[0m ms\u001B[22m\r\n\r\n  \u001B[32m\u279C\u001B[39m  \u001B[1mLocal\u001B[22m:   \u001B[36mhttp://127.0.0.1:\u001B[1m5173\u001B[22m/\u001B[39m\r\n",
+        "durationMs": 5255
+      },
+      {
+        "name": "tests-pass",
+        "kind": "process",
+        "verificationMethod": "test-results",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E portfolio@0.0.0 test\r\n\u003E vitest run\r\n\r\n\r\n RUN  v5.0.5 C:/Users/Pranav Sai Sreekanta/OneDrive/Documents/Portfolio\r\n\r\n\r\n Test Files  1 passed (1)\r\n      Tests  10 passed (10)\r\n   Start at  22:27:14\r\n   Duration  2.79s (tests 36%, import 34%, transform 30%)\r\n\r\n",
+        "durationMs": 7777,
+        "testResults": {
+          "testFramework": "vitest",
+          "runnerDetectedFrom": "package_json",
+          "testsTotal": 10,
+          "testsPassed": 10,
+          "testsFailed": 0,
+          "testsSkipped": 0,
+          "parseFailed": false
+        }
+      }
+    ],
+    "executions": [
+      {
+        "source": "setup[0]",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "ci",
+          "--prefer-offline",
+          "--no-audit",
+          "--no-fund"
+        ],
+        "cwd": "C:\\Users\\Pranav Sai Sreekanta\\OneDrive\\Documents\\Portfolio",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "production-build",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "build"
+        ],
+        "cwd": "C:\\Users\\Pranav Sai Sreekanta\\OneDrive\\Documents\\Portfolio",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "home-page-responds",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "dev",
+          "--",
+          "--host",
+          "127.0.0.1"
+        ],
+        "cwd": "C:\\Users\\Pranav Sai Sreekanta\\OneDrive\\Documents\\Portfolio",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "tests-pass",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "test"
+        ],
+        "cwd": "C:\\Users\\Pranav Sai Sreekanta\\OneDrive\\Documents\\Portfolio",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      }
+    ]
+  }
+}
