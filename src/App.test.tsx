@@ -77,6 +77,9 @@ describe('portfolio landing and About page', () => {
     expect(experienceMarkup).toContain('src="/Leadership/L3.jpeg"')
     expect(experienceMarkup).toContain('src="/Hosting/H1.jpeg"')
     expect(experienceMarkup).toContain('src="/Hosting/H2.jpeg"')
+    expect(experienceMarkup.indexOf('src="/Hosting/H1.jpeg"')).toBeLessThan(
+      experienceMarkup.indexOf('src="/Hosting/H2.jpeg"'),
+    )
     expect(experienceMarkup).toContain('src="/Events/WhatsApp%20Image%202026-11-01%20at%206.24.30%20PM.jpeg"')
     expect(experienceMarkup).toContain('src="/Events/E2.jpeg"')
     expect(experienceMarkup).toContain('src="/Events/E3.jpeg"')
