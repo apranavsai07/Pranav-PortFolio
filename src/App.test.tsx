@@ -159,6 +159,7 @@ describe('portfolio landing and About page', () => {
     expect(markup).toContain('GITHUB')
     expect(markup).toContain('https://github.com/apranavsai07')
     expect(markup).toContain('LINKEDIN')
+    expect(markup).not.toContain('Year not specified')
     expect(markup).toContain('https://www.linkedin.com/in/pranav-sai-sreekanta-ajjarapu-89236032a/')
     expect(markup).toContain('rel="noopener noreferrer"')
   })

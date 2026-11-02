@@ -26,7 +26,6 @@ export const featuredProjects: readonly FeaturedProject[] = [
     id: 'datamind',
     name: 'DataMind',
     category: 'Agentic AI / Data Analytics',
-    year: 'Year not specified',
     summary:
       'An agentic data-analysis system that uses LLM reasoning and analytical tools to automate data analysis and reporting.',
     services: [
@@ -70,7 +69,6 @@ export const featuredProjects: readonly FeaturedProject[] = [
     id: 'behavioral-biometrics',
     name: 'Continuous Behavioral Biometric Authentication',
     category: 'Machine Learning / Security',
-    year: 'Year not specified',
     summary:
       'A behavioral biometric authentication system using engineered behavioral features and a Random Forest classifier.',
     services: [
@@ -111,7 +109,6 @@ export const featuredProjects: readonly FeaturedProject[] = [
     id: 'resumematch',
     name: 'ResumeMatch',
     category: 'AI Application / Full-Stack Development',
-    year: 'Year not specified',
     summary:
       'An AI-powered resume-to-job matching application that generates match scores and identifies skill gaps using resumes and job descriptions.',
     services: [

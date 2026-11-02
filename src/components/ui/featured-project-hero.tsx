@@ -20,7 +20,7 @@ export interface FeaturedProject {
   id: string
   name: string
   category: string
-  year: string
+  year?: string
   summary: string
   services: readonly string[]
   outcome: string
@@ -287,8 +287,12 @@ export function FeaturedProjectHero({
               >
                 <div className="projects-meta">
                   <span>{project.category}</span>
-                  <span aria-hidden="true">/</span>
-                  <span>{project.year}</span>
+                  {project.year && (
+                    <>
+                      <span aria-hidden="true">/</span>
+                      <span>{project.year}</span>
+                    </>
+                  )}
                 </div>
                 <h3 className="projects-name">{project.name}</h3>
                 <p className="projects-summary">{project.summary}</p>
