@@ -187,7 +187,7 @@ function PortfolioNav({
                     target.offsetHeight - window.innerHeight,
                   )
                   window.scrollTo({
-                    top: targetTop + scrollDistance * 0.18,
+                    top: targetTop + scrollDistance * 0.02,
                     behavior: 'smooth',
                   })
                 } else {

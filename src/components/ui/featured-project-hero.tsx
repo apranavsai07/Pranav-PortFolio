@@ -16,6 +16,29 @@ import {
 } from 'framer-motion'
 import type { RefObject } from 'react'
 
+const projectScrollStages = [0.12, 0.14, 0.3, 0.4, 0.5, 0.6, 0.7, 0.78, 0.82, 0.84] as const
+
+function getProjectIndex(progress: number, projectCount: number) {
+  if (projectCount < 2) return 0
+  if (projectCount !== 3) {
+    return Math.min(
+      projectCount - 1,
+      Math.max(0, Math.round(progress * (projectCount - 1))),
+    )
+  }
+  return progress < 0.2 ? 0 : progress < 0.65 ? 1 : 2
+}
+
+function getProjectProgress(index: number, projectCount: number) {
+  if (projectCount === 3) return [0.12, 0.3, 0.7][index]
+  return index / Math.max(1, projectCount - 1)
+}
+
+function getProjectStage(index: number, projectCount: number) {
+  if (projectCount === 3) return [0, 2, 6][index]
+  return Math.round((index / Math.max(1, projectCount - 1)) * (projectScrollStages.length - 1))
+}
+
 export interface FeaturedProject {
   id: string
   name: string
@@ -55,6 +78,7 @@ export function FeaturedProjectHero({
   const [direction, setDirection] = useState(1)
   const pendingIndex = useRef<number | null>(null)
   const pendingTimeout = useRef<number | null>(null)
+  const scrollStage = useRef(0)
   const reducedMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -67,12 +91,12 @@ export function FeaturedProjectHero({
   )
   const projectVisualX = useTransform(
     scrollYProgress,
-    [0, 0.16, 0.84, 1],
+    [0, 0.12, 0.84, 1],
     [-112, 0, 0, -112],
   )
   const projectInfoX = useTransform(
     scrollYProgress,
-    [0, 0.16, 0.84, 1],
+    [0, 0.12, 0.84, 1],
     [112, 0, 0, 112],
   )
   const project = projects[selectedIndex]
@@ -88,12 +112,12 @@ export function FeaturedProjectHero({
 
   useMotionValueEvent(scrollYProgress, 'change', (progress) => {
     if (projects.length < 2) return
-    const nextIndex = Math.min(
-      projects.length - 1,
-      Math.max(0, Math.round(progress * (projects.length - 1))),
-    )
+    const nextIndex = getProjectIndex(progress, projects.length)
     if (pendingIndex.current !== null) {
-      const targetProgress = pendingIndex.current / (projects.length - 1)
+      const targetProgress = getProjectProgress(
+        pendingIndex.current,
+        projects.length,
+      )
       if (Math.abs(progress - targetProgress) > 0.04) return
       pendingIndex.current = null
       if (pendingTimeout.current !== null) {
@@ -113,10 +137,7 @@ export function FeaturedProjectHero({
         pendingTimeout.current = null
       }
       const progress = scrollYProgress.get()
-      const nextIndex = Math.min(
-        projects.length - 1,
-        Math.max(0, Math.round(progress * (projects.length - 1))),
-      )
+      const nextIndex = getProjectIndex(progress, projects.length)
       const currentIndex = selectedIndexRef.current
       if (currentIndex === nextIndex) return
       setDirection(nextIndex > currentIndex ? 1 : -1)
@@ -133,19 +154,123 @@ export function FeaturedProjectHero({
     }
   }, [projects.length, scrollYProgress])
 
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    let wheelLockedUntil = 0
+    let touchStartY: number | null = null
+    let touchMoved = false
+
+    const isPinned = () => {
+      const bounds = section.getBoundingClientRect()
+      return bounds.top <= 1 && bounds.bottom > window.innerHeight + 1
+    }
+
+    const getNextStage = (direction: number) =>
+      Math.max(
+        0,
+        Math.min(
+          projectScrollStages.length - 1,
+          scrollStage.current + direction,
+        ),
+      )
+
+    const moveStage = (direction: number) => {
+      const nextStage = getNextStage(direction)
+      if (nextStage === scrollStage.current) return false
+
+      scrollStage.current = nextStage
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY
+      const scrollDistance = Math.max(0, section.offsetHeight - window.innerHeight)
+      window.scrollTo({
+        top: sectionTop + scrollDistance * projectScrollStages[nextStage],
+        behavior: reducedMotion ? 'instant' : 'smooth',
+      })
+      return true
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      if (
+        !isPinned() ||
+        event.deltaY === 0 ||
+        (event.target instanceof Element && event.target.closest('dialog[open]'))
+      ) {
+        return
+      }
+      const direction = Math.sign(event.deltaY)
+      if (getNextStage(direction) === scrollStage.current) return
+
+      event.preventDefault()
+      const now = performance.now()
+      if (now < wheelLockedUntil) return
+      wheelLockedUntil = now + 450
+      moveStage(direction)
+    }
+
+    const handleTouchStart = (event: TouchEvent) => {
+      const target = event.target
+      if (
+        !isPinned() ||
+        (target instanceof Element &&
+          target.closest('a, button, input, select, textarea, dialog[open]'))
+      ) {
+        touchStartY = null
+        touchMoved = false
+        return
+      }
+      touchStartY = event.touches[0]?.clientY ?? null
+      touchMoved = false
+    }
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (touchStartY === null || !isPinned()) return
+      const currentY = event.touches[0]?.clientY
+      if (currentY === undefined || Math.abs(touchStartY - currentY) < 12) return
+      const direction = Math.sign(touchStartY - currentY)
+      if (getNextStage(direction) === scrollStage.current) return
+      event.preventDefault()
+      touchMoved = true
+    }
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      const endY = event.changedTouches[0]?.clientY
+      if (touchStartY !== null && touchMoved && endY !== undefined) {
+        const distance = touchStartY - endY
+        if (Math.abs(distance) >= 35) moveStage(Math.sign(distance))
+      }
+      touchStartY = null
+      touchMoved = false
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    window.addEventListener('touchstart', handleTouchStart, { passive: true })
+    window.addEventListener('touchmove', handleTouchMove, { passive: false })
+    window.addEventListener('touchend', handleTouchEnd, { passive: true })
+    window.addEventListener('touchcancel', handleTouchEnd, { passive: true })
+    return () => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchmove', handleTouchMove)
+      window.removeEventListener('touchend', handleTouchEnd)
+      window.removeEventListener('touchcancel', handleTouchEnd)
+    }
+  }, [projects.length, reducedMotion, sectionRef])
+
   const selectProject = (index: number) => {
-    if (index < 0 || index >= projects.length || index === selectedIndex) return
+    if (index < 0 || index >= projects.length) return
     updateSelectedIndex(index)
     if (projects.length < 2 || !sectionRef.current) return
 
     pendingIndex.current = index
+    scrollStage.current = getProjectStage(index, projects.length)
     if (pendingTimeout.current !== null) {
       window.clearTimeout(pendingTimeout.current)
     }
     const section = sectionRef.current
     const sectionTop = section.getBoundingClientRect().top + window.scrollY
     const scrollDistance = Math.max(0, section.offsetHeight - window.innerHeight)
-    const projectProgress = 0.16 + (index / (projects.length - 1)) * 0.68
+    const projectProgress = getProjectProgress(index, projects.length)
     const targetScroll = sectionTop + scrollDistance * projectProgress
     window.scrollTo({
       top: targetScroll,
@@ -155,11 +280,7 @@ export function FeaturedProjectHero({
       pendingIndex.current = null
       pendingTimeout.current = null
       const progress = scrollYProgress.get()
-      const nextIndex = Math.min(
-        projects.length - 1,
-        Math.max(0, Math.round(progress * (projects.length - 1))),
-      )
-      updateSelectedIndex(nextIndex)
+      updateSelectedIndex(getProjectIndex(progress, projects.length))
     }, 2000)
   }
 
@@ -248,7 +369,7 @@ export function FeaturedProjectHero({
                 initial={reducedMotion ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={reducedMotion ? undefined : { opacity: 0 }}
-                transition={{ duration: reducedMotion ? 0 : 0.3, ease: 'easeOut' }}
+                transition={{ duration: reducedMotion ? 0 : 0.55, ease: 'easeOut' }}
               >
                 {project.visual}
               </motion.div>
@@ -283,7 +404,7 @@ export function FeaturedProjectHero({
                 initial={reducedMotion ? false : 'enter'}
                 animate="center"
                 exit="exit"
-                transition={{ duration: reducedMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: reducedMotion ? 0 : 0.85, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="projects-meta">
                   <span>{project.category}</span>

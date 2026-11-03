@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   motion,
   useScroll,
@@ -28,6 +28,11 @@ function App() {
   const projectsSectionRef = useRef<HTMLElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const reducedMotion = prefersReducedMotion === true
+  const [isMobileViewport, setIsMobileViewport] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 700px)').matches,
+  )
   const scrollYProgress = useContainerScrollProgress(transitionRef)
   const { scrollYProgress: aboutProjectsProgress } = useScroll({
     target: aboutSectionRef,
@@ -54,23 +59,23 @@ function App() {
   )
   const characterOpacity = useTransform(
     aboutProjectsProgress,
-    [0.86, 1],
+    isMobileViewport ? [0.98, 1] : [0.86, 1],
     [1, 0],
   )
   const aboutExitOpacityRaw = useTransform(
     aboutProjectsProgress,
     [0.84, 1],
-    [1, 0],
+    [1, isMobileViewport ? 1 : 0],
   )
   const aboutExitHeadingXRaw = useTransform(
     aboutProjectsProgress,
     [0.84, 1],
-    [0, -88],
+    [0, isMobileViewport ? 0 : -88],
   )
   const aboutExitCopyYRaw = useTransform(
     aboutProjectsProgress,
     [0.84, 1],
-    [0, 88],
+    [0, isMobileViewport ? 0 : 88],
   )
   const aboutHeadingOpacityRaw = useTransform(
     scrollYProgress,
@@ -114,6 +119,13 @@ function App() {
   const certificationsContentOpacity = 1
   const certificationsContentY = 0
 
+  useEffect(() => {
+    const mobileViewport = window.matchMedia('(max-width: 700px)')
+    const updateViewport = () => setIsMobileViewport(mobileViewport.matches)
+    mobileViewport.addEventListener('change', updateViewport)
+    return () => mobileViewport.removeEventListener('change', updateViewport)
+  }, [])
+
   useLayoutEffect(() => {
     const navigation = performance.getEntriesByType(
       'navigation',
@@ -144,9 +156,18 @@ function App() {
       const characterBounds = character.getBoundingClientRect()
       if (!stageBounds || !characterBounds.width || !characterBounds.height) return
 
+      const mobileHandoffStart = 0.72
       const movement = reducedMotion
         ? 0
-        : Math.max(0, Math.min(1, progress))
+        : isMobileViewport
+          ? Math.max(
+              0,
+              Math.min(
+                1,
+                (progress - mobileHandoffStart) / (1 - mobileHandoffStart),
+              ),
+            )
+          : Math.max(0, Math.min(1, progress))
       const easedMovement = movement * movement * (3 - 2 * movement)
       const characterShift =
         window.innerWidth <= 700
@@ -158,26 +179,82 @@ function App() {
       characterLayer.style.top = `${Math.max(0, stageBounds.top) + posterBounds.top - sceneBounds.top + characterDrop * easedMovement}px`
       characterLayer.style.width = `${posterBounds.width}px`
       characterLayer.style.height = `${posterBounds.height}px`
+      if (isMobileViewport && progress >= mobileHandoffStart) {
+        const heading = document.querySelector<HTMLElement>('#about .about-heading')
+        const copy = document.querySelector<HTMLElement>('#about .about-copy-block')
+        if (heading && copy) {
+          characterLayer.style.transform = 'none'
+          const layerBounds = characterLayer.getBoundingClientRect()
+          const characterBounds = character.getBoundingClientRect()
+          const headingBounds = heading.getBoundingClientRect()
+          const copyBounds = copy.getBoundingClientRect()
+          if (layerBounds.width && characterBounds.height) {
+            const gapTop = headingBounds.bottom + 8
+            const gapBottom = copyBounds.top - 8
+            const gapHeight = Math.max(0, gapBottom - gapTop)
+            const scale = Math.min(0.58, gapHeight / characterBounds.height)
+            const localCharacterX =
+              characterBounds.left + characterBounds.width / 2 - layerBounds.left
+            const localCharacterY = characterBounds.top - layerBounds.top
+            const targetTop =
+              gapTop + (gapHeight - characterBounds.height * scale) / 2
+            const translateX =
+              window.innerWidth / 2 -
+              layerBounds.left -
+              localCharacterX * scale
+            const translateY =
+              targetTop - layerBounds.top - localCharacterY * scale
+            const transformProgress = reducedMotion
+              ? Number(progress >= 1)
+              : easedMovement
+            characterLayer.style.transform =
+              `translate(${translateX * transformProgress}px, ${translateY * transformProgress}px) scale(${1 + (scale - 1) * transformProgress})`
+          }
+        }
+      } else {
+        characterLayer.style.transform = ''
+      }
     },
-    [reducedMotion],
+    [isMobileViewport, reducedMotion],
   )
 
   useMotionValueEvent(scrollYProgress, 'change', setCharacterOffset)
+  useMotionValueEvent(aboutProjectsProgress, 'change', () => {
+    if (isMobileViewport) {
+      window.setTimeout(
+        () => window.requestAnimationFrame(() => setCharacterOffset(1)),
+        50,
+      )
+    }
+  })
 
   useEffect(() => {
     let frame = 0
+    let timeout = 0
     const measure = () => {
       window.cancelAnimationFrame(frame)
-      frame = window.requestAnimationFrame(() => setCharacterOffset(scrollYProgress.get()))
+      window.clearTimeout(timeout)
+      timeout = window.setTimeout(() => {
+        frame = window.requestAnimationFrame(() => {
+          const progress =
+            isMobileViewport && aboutProjectsProgress.get() > 0
+              ? 1
+              : scrollYProgress.get()
+          setCharacterOffset(progress)
+        })
+      }, 50)
     }
 
     measure()
     window.addEventListener('resize', measure)
+    window.addEventListener('scroll', measure, { passive: true })
     return () => {
+      window.clearTimeout(timeout)
       window.cancelAnimationFrame(frame)
       window.removeEventListener('resize', measure)
+      window.removeEventListener('scroll', measure)
     }
-  }, [scrollYProgress, setCharacterOffset])
+  }, [aboutProjectsProgress, isMobileViewport, scrollYProgress, setCharacterOffset])
 
   return (
     <main>

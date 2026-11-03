@@ -2,7 +2,7 @@ import { motion, type MotionValue } from 'framer-motion'
 import type { RefObject } from 'react'
 
 const introduction =
-  "I'm a final-year Computer Science student based in Hyderabad, focused on building intelligent systems through AI/ML and full-stack development. I like taking ideas from concept to implementation — from developing machine learning pipelines and agentic AI workflows to building the APIs and interfaces that bring them to life. My work includes a behavioural biometric authentication system and an AI-powered platform for automated data analysis. Beyond building technology, I serve as the Vice President of DevCatalyst Tech Club, where I lead technical initiatives, workshops, and large-scale events. I bring the same mindset to everything I do that I value in cricket: staying composed under pressure, making thoughtful decisions, and believing in the strength of a team."
+  "I’m a final-year Computer Science student in Hyderabad, building intelligent systems through AI/ML and full-stack development. I like taking ideas from concept to implementation, from machine learning pipelines and agentic AI workflows to the APIs and interfaces behind them. My work includes a behavioural biometric authentication system and an AI-powered platform for automated data analysis. I’m also the Vice President of DevCatalyst Tech Club, leading technical initiatives, workshops, and large-scale events. Away from the screen, I play cricket and I’m a big Dhoni fan. The game taught me to control my emotions in tough situations, back myself, and decide under pressure, and I draw on those moments in how I approach my academics, projects, and leadership."
 type AboutSectionProps = {
   id: string
   sectionRef: RefObject<HTMLElement | null>
