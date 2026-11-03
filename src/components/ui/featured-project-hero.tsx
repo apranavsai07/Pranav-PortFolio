@@ -16,7 +16,7 @@ import {
 } from 'framer-motion'
 import type { RefObject } from 'react'
 
-const projectScrollStages = [0.12, 0.14, 0.3, 0.4, 0.5, 0.6, 0.7, 0.78, 0.82, 0.84] as const
+const projectScrollStages = [0.12, 0.14, 0.3, 0.4, 0.5, 0.7, 0.8, 0.84] as const
 
 function getProjectIndex(progress: number, projectCount: number) {
   if (projectCount < 2) return 0
@@ -35,7 +35,7 @@ function getProjectProgress(index: number, projectCount: number) {
 }
 
 function getProjectStage(index: number, projectCount: number) {
-  if (projectCount === 3) return [0, 2, 6][index]
+  if (projectCount === 3) return [0, 2, 5][index]
   return Math.round((index / Math.max(1, projectCount - 1)) * (projectScrollStages.length - 1))
 }
 

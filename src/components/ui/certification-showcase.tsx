@@ -111,6 +111,9 @@ function CertificatePreview({
           src={certification.imagePath}
           alt={`${certification.name} certificate`}
           className={imageStatus === 'loaded' ? 'is-loaded' : ''}
+          loading="eager"
+          decoding="async"
+          fetchPriority={index === 1 ? 'high' : 'auto'}
           onLoad={() => setImageStatus('loaded')}
           onError={() => setImageStatus('error')}
         />
@@ -133,11 +136,11 @@ export function CertificationShowcase({
   const selectedCertification = certifications[0]
   const [selectedId, setSelectedId] = useState(selectedCertification?.id ?? '')
   const [finePointer, setFinePointer] = useState(false)
-  const [touchInteraction, setTouchInteraction] = useState(false)
   const [previewVisible, setPreviewVisible] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const animationFrame = useRef(0)
+  const preloadedImages = useRef(new Map<string, HTMLImageElement>())
   const prefersReducedMotion = useReducedMotion()
   const reducedMotion = prefersReducedMotion === true
   const activeCertification =
@@ -161,6 +164,33 @@ export function CertificationShowcase({
     pointerQuery.addEventListener('change', updatePointerType)
     return () => pointerQuery.removeEventListener('change', updatePointerType)
   }, [])
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+
+    const preloadCertificates = () => {
+      certifications.forEach(({ imagePath }) => {
+        if (preloadedImages.current.has(imagePath)) return
+
+        const image = new Image()
+        image.decoding = 'async'
+        image.src = imagePath
+        preloadedImages.current.set(imagePath, image)
+      })
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return
+        preloadCertificates()
+        observer.disconnect()
+      },
+      { rootMargin: '1200px 0px' },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [certifications])
 
   useEffect(
     () => () => {
@@ -270,37 +300,16 @@ export function CertificationShowcase({
                 >
                   <div
                     className={`certification-row${selected ? ' is-selected' : ''}`}
-                    onPointerMove={(event) => {
-                      if (event.pointerType === 'touch') {
-                        setTouchInteraction(true)
-                      }
-                    }}
                     onPointerEnter={(event) => {
-                      if (event.pointerType === 'touch') {
-                        setTouchInteraction(true)
-                        setPreviewVisible(false)
-                        return
-                      }
-                      setTouchInteraction(false)
+                      if (event.pointerType === 'touch') return
                       selectCertification(certification)
                       setPreviewVisible(finePointer)
-                    }}
-                    onPointerLeave={(event) => {
-                      if (event.pointerType === 'touch') {
-                        setTouchInteraction(false)
-                      }
                     }}
                   >
                     <button
                       className="certification-select"
                       type="button"
                       aria-pressed={selected}
-                      onPointerDown={(event) => {
-                        if (event.pointerType === 'touch') {
-                          setTouchInteraction(true)
-                          setPreviewVisible(false)
-                        }
-                      }}
                       onFocus={(event) =>
                         showPreviewForFocus(certification, event.currentTarget)
                       }
@@ -340,7 +349,7 @@ export function CertificationShowcase({
             })}
           </ol>
           <div
-            className={`certification-inline-preview${touchInteraction ? ' is-touch-visible' : ''}${activeCertification.imageOrientation === 'portrait' ? ' is-portrait' : ''}`}
+            className={`certification-inline-preview${activeCertification.imageOrientation === 'portrait' ? ' is-portrait' : ''}`}
           >
             <CertificatePreview
               key={activeCertification.id}

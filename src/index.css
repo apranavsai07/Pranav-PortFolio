@@ -1668,8 +1668,8 @@ body {
 
 #transition:not([data-reduced-motion="true"]) ~ .about-scene {
   margin-top: -100svh;
-  height: 300svh;
-  min-height: 300svh;
+  height: 200svh;
+  min-height: 200svh;
 }
 
 #transition:not([data-reduced-motion="true"]) ~ .about-scene .about-layout {
@@ -2115,8 +2115,8 @@ body {
 
   #transition:not([data-reduced-motion="true"]) ~ .about-scene {
     margin-top: -100svh;
-    height: 300svh;
-    min-height: 300svh;
+    height: 100svh;
+    min-height: 100svh;
   }
 
   #transition:not([data-reduced-motion="true"]) ~ .about-scene .about-layout {
@@ -4070,6 +4070,31 @@ body {
     display: block;
     width: min(100%, 390px);
     margin: 1.1rem auto 0;
+  }
+
+  .certification-inline-preview.is-portrait {
+    width: min(100%, 390px);
+  }
+
+  .certification-inline-preview .certification-preview-image {
+    aspect-ratio: 1.42;
+  }
+
+  .certification-inline-preview .certification-preview-card.is-portrait .certification-preview-image {
+    aspect-ratio: 1.42;
+  }
+
+  .certification-row:not(.is-selected):hover {
+    background: transparent;
+  }
+
+  .certification-row:not(.is-selected):hover .certification-name,
+  .certification-row:not(.is-selected):hover .certification-row-action {
+    color: inherit;
+  }
+
+  .certification-row:not(.is-selected):hover::before {
+    transform: scaleX(0);
   }
 
   .certification-preview-card.is-compact {
